@@ -2,7 +2,7 @@
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 
-{ config, pkgs, inputs, ... }:
+{ pkgs, ... }:
 
 {
 
@@ -14,26 +14,6 @@
     # Use latest kernel.
   kernelPackages = pkgs.linuxPackages_latest;
   
-  plymouth = {
-    enable = true;
-    theme = "motion";
-    themePackages = with pkgs; [
-      # By default we would install all themes
-      (adi1090x-plymouth-themes.override {
-        selected_themes = [ "motion" ];
-      })
-    ];
-  };
-  boot = {
-    # Enable "Silent boot"
-    consoleLogLevel = 3;
-    initrd.verbose = false;
-    kernelParams = [
-      "quiet"
-      "rd.udev.log_level=3"
-      "rd.systemd.show_status=auto"
-    ];
-  };
 
   networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
 
@@ -109,22 +89,7 @@
   # Enable touchpad support (enabled default in most desktopManager).
   # services.xserver.libinput.enable = true;
 
-  # Define a user account. Don't forget to set a password with ‘passwd’.
-  users.users."cig0073" = {
-    isNormalUser = true;
-    description = "Cig0073";
-    extraGroups = [ "networkmanager" "wheel" "video" "input" "uinput" ];
-    shell = pkgs.fish;
-    packages = with pkgs; [
-      kdePackages.kate
-      jellyfin-tui
-    #  thunderbird
-    ];
-    hashedPassword = "$6$nwdrlyxXsr/tOvwm$7ghcLX0QDdU5Pql.ogFnHGQI2ZR/Bfk3i4RQJVQmICMJikFof09mMiOlpsE0Lh5gIOdh5Biumtdue.kULGcxp1"; # <<<--- Generate your own initial hashed password
-  };
-
   # Install firefox.
-  programs.firefox.enable = true;
 
   # Allow unfree packages
   nixpkgs.config.allowUnfree = true;
@@ -145,16 +110,12 @@
   	helix
   ];
 
-  # Enable the OpenSSH daemon.
-  services.openssh = {
-    enable = true;
-  };
 
   # Open ports in the firewall.
   # networking.firewall.allowedTCPPorts = [ ... ];
   # networking.firewall.allowedUDPPorts = [ ... ];
   # Or disable the firewall altogether.
-   networking.firewall.enable = true;
+  networking.firewall.enable = true;
 
    #
    # Nix

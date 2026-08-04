@@ -47,6 +47,9 @@
    	  	  chaotic.nixosModules.default
    	  	  inputs.nixkit.nixosModules.default
    	      ./nixos-fremont
+   	      ./modules/gaming.nix
+   	      ./modules/gaming-jovian.nix
+   	      ./modules/sunshine.nix
  	      ];
   	  };
 
@@ -60,7 +63,11 @@
 
       nixbook-air = nixpkgs.lib.nixosSystem {
         modules = [ 
+        ./modules/base-config.nix
+        ./modules/limine.nix
         ./nixbook-air
+        ./modules/gaming.nix
+        ./modules/niri/niri.nix
         home-manager.nixosModules.default
         chaotic.nixosModules.default
         {
@@ -68,7 +75,7 @@
         	home-manager = {
         	  useGlobalPkgs = true;
         	  useUserPackages = true;
-        	  users.cig0073 = ./nixbook-air/home.nix; # replace <USERNAME> with your actual username
+        	  users.cig0073 = ./modules/home.nix; # replace <USERNAME> with your actual username
         	};
         }
         ];
@@ -86,7 +93,7 @@
         	home-manager = {
         	  useGlobalPkgs = true;
         	  useUserPackages = true;
-        	  users.cig0073 = ./nixos-ally/home.nix; # replace <USERNAME> with your actual username
+        	  users.cig0073 = ./modules/home.nix; # replace <USERNAME> with your actual username
         	};
         }
         ];

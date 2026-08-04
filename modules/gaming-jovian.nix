@@ -1,26 +1,40 @@
 #
 # copy of jovian.nix -- Gaming
 #
-{ config, pkgs, lib, inputs, ...}:
+{ pkgs, ...}:
 
 {
-/*
-  imports = [
-  	./steam-switch.nix
-  ];
-*/
   system.activationScripts = {
     print-jovian = {
       text = builtins.trace "building the jovian configuration..." "";
     };
   };
 
-  # Create a custom session definition that drops to SDDM
+  plymouth = {
+    enable = true;
+    theme = "motion";
+    themePackages = with pkgs; [
+      # By default we would install all themes
+      (adi1090x-plymouth-themes.override {
+        selected_themes = [ "motion" ];
+      })
+    ];
+  };
+  boot = {
+    # Enable "Silent boot"
+    consoleLogLevel = 3;
+    initrd.verbose = false;
+    kernelParams = [
+      "quiet"
+      "rd.udev.log_level=3"
+      "rd.systemd.show_status=auto"
+    ];
+  };
+
   environment.systemPackages = with pkgs; [    
-    lutris
-    ludusavi
     mangohud
-    #proton-ge-bin
+  	kdePackages.plasma-bigscreen
+    kdePackages.plasma-keyboard
   ];  
   
   jovian.steam = {
@@ -33,33 +47,8 @@
     };
   };  
 
-  programs.steam = {
-    enable = true;
-    localNetworkGameTransfers.openFirewall = true;
-    remotePlay.openFirewall = true;
-    dedicatedServer.openFirewall = true;
-    extest.enable = true;
-    extraCompatPackages = with pkgs; [ proton-ge-bin proton-cachyos ];
-    #gamescopeSession.enable = true;
-  };
-
   hardware.steam-hardware.enable = true;
 
-  services.sunshine = {
-  	enable = true;
-  	openFirewall = true;
-  	capSysAdmin = true;
-  	autoStart = true;
-  	settings = {
-  	  upnp = "enabled";
-  	  csrf_allowed_origins = "https://192.168.0.12";
-  	  origin_pin_allowed = "lan";
-  	  origin_web_ui_allowed = "lan";
-  	};
-  };
-
-  services.sunshine-virt-display.enable = true;
-  
   jovian.decky-loader.enable = true;
   jovian.decky-loader.user = "cig0073";
   #jovian.devices.steamdeck.autoUpdate = true;

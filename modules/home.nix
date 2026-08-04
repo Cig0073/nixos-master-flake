@@ -1,6 +1,7 @@
 { pkgs, ...}:
 
 {
+
   home.packages = with pkgs; [
     #tree
     qutebrowser
@@ -11,11 +12,12 @@
     ytm-player
     nil
     nixpkgs-fmt
-    xwayland-satellite
     kdePackages.okular
     moonlight-qt
     mpv
   ];
+
+  programs.firefox.enable = true;
   
   programs.helix = {
     enable = true;
