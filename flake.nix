@@ -64,7 +64,7 @@
       nixbook-air = nixpkgs.lib.nixosSystem {
         modules = [ 
         ./modules/base-config.nix
-        ./modules/limine.nix
+        ./modules/limine/limine.nix
         ./nixbook-air
         ./modules/gaming.nix
         ./modules/niri/niri.nix
@@ -85,7 +85,7 @@
         modules = [ 
         ./nixos-ally
         nixos-hardware.nixosModules.asus-ally-rc71l
-        ./modules/limine.nix
+        ./modules/limine/limine.nix
         home-manager.nixosModules.default
         chaotic.nixosModules.default
         {
