@@ -1,7 +1,7 @@
 # This expression was written by `cbrauchli` at https://discourse.nixos.org/t/disable-suspend-if-ssh-sessions-are-active/11655/4
 # with minor modifications by Dominic Mayhew
 
-{ config, options, lib, pkgs, ... }:
+{ pkgs, ... }:
 
 let
   PID_PATH = "/tmp/ssh_sleep_block.pid";

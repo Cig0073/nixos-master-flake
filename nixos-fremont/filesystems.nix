@@ -28,13 +28,4 @@
     fsType = "vfat";
     options = [ "fmask=0022" "dmask=0022" ];
   };
-  # =========================================================================
-  # 2. HIGH-PERFORMANCE ZRAM SWAP
-  # =========================================================================
-  zramSwap = {
-    enable = true;
-    memoryPercent = 100;
-    algorithm = "zstd";
-    priority = 5;
-  };
 }

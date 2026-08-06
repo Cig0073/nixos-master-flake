@@ -47,9 +47,13 @@
    	  	  chaotic.nixosModules.default
    	  	  inputs.nixkit.nixosModules.default
    	      ./nixos-fremont
+   	      ./modules/base-config.nix
    	      ./modules/gaming.nix
    	      ./modules/gaming-jovian.nix
    	      ./modules/sunshine.nix
+   	      ./modules/steamos-system-modifications.nix
+   	      ./modules/sshd-suspend-inhibit.nix
+   	      ./modules/limine/limine.nix
  	      ];
   	  };
 
@@ -84,6 +88,8 @@
       nixos-ally = nixpkgs.lib.nixosSystem {
         modules = [ 
         ./nixos-ally
+        ./modules/base-config.nix
+        ./modules/gaming.nix
         nixos-hardware.nixosModules.asus-ally-rc71l
         ./modules/limine/limine.nix
         home-manager.nixosModules.default

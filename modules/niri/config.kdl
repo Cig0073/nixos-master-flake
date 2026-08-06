@@ -23,16 +23,6 @@ input {
     disable-power-key-handling
 }
 
-// ────────────── Output Configuration ──────────────
-//   workspace-auto-back-and-forth // Enable workspace back & forth switching
-// You can run `niri msg outputs` to get the correct name for your displays.
-// You will have to remove "/-" and edit it before it takes effect.
-// https://github.com/YaLTeR/niri/wiki/Configuration:-Outputs
-
-output "eDP-1" {
-    scale 0.75 // No scaling (use 2 for HiDPI)
-}
-
 // ────────────── Keybindings ──────────────
 // https://github.com/YaLTeR/niri/wiki/Configuration:-Key-Bindings
 

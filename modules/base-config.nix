@@ -14,6 +14,21 @@
   # Set your time zone.
   time.timeZone = "Europe/Istanbul";
 
+  # Select internationalisation properties.
+  i18n.defaultLocale = "en_US.UTF-8";
+
+  i18n.extraLocaleSettings = {
+    LC_ADDRESS = "tr_TR.UTF-8";
+    LC_IDENTIFICATION = "tr_TR.UTF-8";
+    LC_MEASUREMENT = "tr_TR.UTF-8";
+    LC_MONETARY = "tr_TR.UTF-8";
+    LC_NAME = "tr_TR.UTF-8";
+    LC_NUMERIC = "tr_TR.UTF-8";
+    LC_PAPER = "tr_TR.UTF-8";
+    LC_TELEPHONE = "tr_TR.UTF-8";
+    LC_TIME = "tr_TR.UTF-8";
+  };
+
   hardware.graphics.enable = true;
   hardware.graphics.enable32Bit = true;
 
@@ -41,6 +56,22 @@
   services.printing.enable = true;
   # Enable touchpad support (enabled default in most desktopManager).
   services.libinput.enable = true;
+
+  # Enable sound with pipewire.
+  services.pulseaudio.enable = false;
+  security.rtkit.enable = true;
+  services.pipewire = {
+    enable = true;
+    alsa.enable = true;
+    alsa.support32Bit = true;
+    pulse.enable = true;
+    # If you want to use JACK applications, uncomment this
+    #jack.enable = true;
+
+    # use the example session manager (no others are packaged yet so this is enabled by default,
+    # no need to redefine it in your config for now)
+    #media-session.enable = true;
+  };
 
   programs.fish = {
     enable = true;
@@ -70,6 +101,7 @@
     wget 
     tldr
     wl-clipboard
+    fastfetch
   ];
 
   # Enable the OpenSSH daemon.

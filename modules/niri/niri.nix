@@ -1,9 +1,10 @@
-{ pkgs, config, ... }:
+{ ... }:
 let
   # Path to your default config (can be a relative file in your repo or inline text)
   defaultDmsConfig = ./dms-settings.json; 
   # Or inline: pkgs.writeText "dms-config.json" ''{ "theme": "dark" }'';
-in{
+in
+{
   programs.niri.enable = true;
   security.polkit.enable = true; # polkit
   services.gnome.gnome-keyring.enable = true; # secret service
@@ -46,7 +47,10 @@ in{
     #  Explicitly request Home Manager's scope here
     ({ config, lib, ... }: {
       
-      xdg.configFile."niri/config.kdl".source = ./config.kdl;
+      xdg.configFile."niri/config.kdl" = {
+        source = ./config.kdl;
+        force = true;
+      };
 
       home.activation.initDmsConfig = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
         TARGET_DIR="$HOME/.config/dms"
