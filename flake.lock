@@ -22,22 +22,6 @@
         "type": "github"
       }
     },
-    "catppuccin-wallpapers": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1762937368,
-        "narHash": "sha256-2/dZGA5IoYANTUlR0I/GUtO8GeOlzAHouyjtKuVvcl4=",
-        "owner": "orangci",
-        "repo": "walls",
-        "rev": "f61033f92cc24c60aebd306e113eb2aacd498c0f",
-        "type": "github"
-      },
-      "original": {
-        "owner": "orangci",
-        "repo": "walls",
-        "type": "github"
-      }
-    },
     "chaotic": {
       "inputs": {
         "flake-schemas": "flake-schemas",
@@ -291,22 +275,6 @@
         "type": "github"
       }
     },
-    "nixos-artwork": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1751141820,
-        "narHash": "sha256-//4BiRF1W5W2rEbw6MupiyDOjvcveqGtYjJ1mZfck9U=",
-        "owner": "NixOS",
-        "repo": "nixos-artwork",
-        "rev": "9d2cdedd73d64a068214482902adea3d02783ba8",
-        "type": "github"
-      },
-      "original": {
-        "owner": "NixOS",
-        "repo": "nixos-artwork",
-        "type": "github"
-      }
-    },
     "nixos-hardware": {
       "inputs": {
         "nixpkgs": "nixpkgs_2"
@@ -389,13 +357,11 @@
     "root": {
       "inputs": {
         "arion": "arion",
-        "catppuccin-wallpapers": "catppuccin-wallpapers",
         "chaotic": "chaotic",
         "home-manager": "home-manager_2",
         "jovian-nixos": "jovian-nixos",
         "millennium": "millennium",
         "nixkit": "nixkit",
-        "nixos-artwork": "nixos-artwork",
         "nixos-hardware": "nixos-hardware",
         "nixpkgs": "nixpkgs_3",
         "ytm-player": "ytm-player"

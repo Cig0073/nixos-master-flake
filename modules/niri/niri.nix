@@ -5,7 +5,6 @@ let
   # Or inline: pkgs.writeText "dms-config.json" ''{ "theme": "dark" }'';
 in
 {
-  imports = [ ./wallpapers.nix];
   programs.niri.enable = true;
   security.polkit.enable = true; # polkit
   services.gnome.gnome-keyring.enable = true; # secret service

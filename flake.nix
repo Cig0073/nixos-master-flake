@@ -30,11 +30,6 @@
     };
     millennium.url = "github:SteamClientHomebrew/Millennium?dir=packages/nix";
     nixos-hardware.url = "github:NixOS/nixos-hardware/master";
-
-    # ----- For Wallpapers ------
-    nixos-artwork = { url = "github:NixOS/nixos-artwork"; flake = false; };
-    catppuccin-wallpapers = { url = "github:orangci/walls"; flake = false; };
-    # ----- Wallpaper End ------
   };
 
   outputs = { self, nixpkgs, jovian-nixos, chaotic, arion, millennium, home-manager, ytm-player, nixos-hardware, ... }@inputs:
@@ -43,6 +38,7 @@
     in
     {
   	nixosConfigurations = {
+
   	  nixos-fremont = nixpkgs.lib.nixosSystem {
     		system = "x86_64-linux";
     		specialArgs = { inherit inputs; };
@@ -58,7 +54,6 @@
    	      ./modules/steamos-system-modifications.nix
    	      ./modules/sshd-suspend-inhibit.nix
    	      ./modules/limine/limine.nix
-   	      ./modules/plasma-desktop.nix
  	      ];
   	  };
 
@@ -71,7 +66,6 @@
       };
 
       nixbook-air = nixpkgs.lib.nixosSystem {
-	      specialArgs = { inherit inputs; }; 
         modules = [ 
         ./modules/base-config.nix
         ./modules/limine/limine.nix
@@ -92,7 +86,6 @@
       };
       
       nixos-ally = nixpkgs.lib.nixosSystem {
-	      specialArgs = { inherit inputs; }; 
         modules = [ 
         ./nixos-ally
         ./modules/base-config.nix

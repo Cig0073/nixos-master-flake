@@ -14,6 +14,13 @@
     # Use latest kernel.
   kernelPackages = pkgs.linuxPackages_latest;
   
+  # Enable the KDE Plasma Desktop Environment.
+  services.displayManager.sddm = {
+  	enable = true;
+  	enableHidpi = true;
+  	wayland.enable = true;
+  };
+  services.desktopManager.plasma6.enable = true;
 
   services.displayManager.sessionPackages = [
   	pkgs.kdePackages.plasma-bigscreen
@@ -25,8 +32,15 @@
     variant = "";
   };
 
+
+
   # List packages installed in system profile. To search, run:
   # $ nix search wget
+  environment.systemPackages = with pkgs; [
+  	kdePackages.plasma-bigscreen
+    kdePackages.plasma-keyboard
+  	kdePackages.partitionmanager
+  ];
 
   # This value determines the NixOS release from which the default
   # settings for stateful data, like file locations and database versions
