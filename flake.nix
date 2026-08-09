@@ -72,6 +72,7 @@
         ./nixbook-air
         ./modules/gaming.nix
         ./modules/niri/niri.nix
+        ./modules/zapret.nix
         home-manager.nixosModules.default
         chaotic.nixosModules.default
         {
