@@ -34,7 +34,7 @@ in
 {
   # Install the liberated gaming stack
   environment.systemPackages = with pkgs; [
-    hydraLauncher
+    hydralauncher
     ludusavi
     ludusaviAutoBackup
     
