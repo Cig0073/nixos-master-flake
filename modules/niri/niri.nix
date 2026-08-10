@@ -1,4 +1,4 @@
-{ ... }:
+{ pkgs, ... }:
 let
   # Path to your default config (can be a relative file in your repo or inline text)
   defaultDmsConfig = ./dms-settings.json; 
@@ -41,6 +41,8 @@ in
   programs.kdeconnect = {
     enable = true;
   };
+
+  environment.systemPackages = with pkgs; [ xwayland-satellite ];
 
   # Applies to all Home Manager profiles on this machine
   home-manager.sharedModules = [

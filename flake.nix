@@ -57,6 +57,31 @@
  	      ];
   	  };
 
+      nixos-chell = nixpkgs.lib.nixosSystem {
+    		system = "x86_64-linux";
+    		specialArgs = { inherit inputs; };
+        modules = [ 
+          ./nixos-chell
+          ./modules/base-config.nix
+          ./modules/limine/limine.nix
+          ./modules/gaming.nix
+   	      ./modules/sunshine.nix
+          ./modules/niri/niri.nix
+          ./modules/zapret.nix
+          home-manager.nixosModules.default
+          chaotic.nixosModules.default
+   	  	  inputs.nixkit.nixosModules.default
+          {
+        	  nixpkgs.overlays = [ ytm-player.overlays.default ];
+        	  home-manager = {
+        	    useGlobalPkgs = true;
+        	    useUserPackages = true;
+        	    users.cig0073 = ./modules/home.nix; # replace <USERNAME> with your actual username
+        	  };
+          }
+        ];
+      };
+
 	    nixos-vault = nixpkgs.lib.nixosSystem {
 	      system = "x86_64-linux";
 	      specialArgs = { inherit inputs; }; 

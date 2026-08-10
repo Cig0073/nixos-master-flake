@@ -31,7 +31,6 @@ binds {
 
     // ─── Applications ───
     MOD+RETURN                          hotkey-overlay-title="Open Terminal: kitty" { spawn-sh "kitty"; }
-    //MOD+SPACE                           hotkey-overlay-title="Open Noctalia App Launcher" { spawn-sh "dms ipc call spotlight toggle"; }
     MOD+SPACE                           hotkey-overlay-title="Open dms App Launcher" { spawn-sh "dms ipc call spotlight toggle"; }
     MOD+B                               hotkey-overlay-title="Open Browser: QuteBrowser" { spawn-sh "qutebrowser"; }
     MOD+ALT+L                           hotkey-overlay-title="Lock Screen: swaylock" { spawn-sh "swaylock"; }
@@ -116,8 +115,8 @@ binds {
     MOD+CTRL+WHEELSCROLLRIGHT           { move-column-right; }
     MOD+CTRL+WHEELSCROLLLEFT            { move-column-left; }
 
-    MOD+SHIFT+WHEELSCROLLDOWN           { focus-column-right; }
-    MOD+SHIFT+WHEELSCROLLUP             { focus-column-left; }
+    MOD+WHEELSCROLLDOWN                 { focus-column-right; }
+    MOD+WHEELSCROLLUP                   { focus-column-left; }
     MOD+CTRL+SHIFT+WHEELSCROLLDOWN      { move-column-right; }
     MOD+CTRL+SHIFT+WHEELSCROLLUP        { move-column-left; }
 
@@ -176,17 +175,7 @@ binds {
 // ────────────── Startup Applications ──────────────
 // https://github.com/YaLTeR/niri/wiki/Configuration:-Miscellaneous#spawn-sh-at-startup
 
-    spawn-sh-at-startup "/usr/lib/polkit-kde-authentication-agent-1 &" // Polkit
-    //spawn-sh-at-startup "swww-daemon" // Wallpaper daemon
-    //spawn-sh-at-startup "swww img /usr/share/wallpapers/cachyos-wallpapers/Skyscraper.png" // Set wallpaper
-    //spawn-sh-at-startup "waybar" // Launch waybar
-    //spawn-sh-at-startup "nm-applet"
-    //spawn-sh-at-startup "octopi-notifier"
-    //spawn-sh-at-startup "syncthingtray --wait --windowed" 
-    //spawn-sh-at-startup "kdeconnect-indicator" 
-    //spawn-sh-at-startup "kdeconnectd" 
     prefer-no-csd // Disable program decorations
-    //spawn-at-startup "qs" "-c" "noctalia-shell"
 
 // ────────────── Layout Settings ──────────────
 // https://github.com/YaLTeR/niri/wiki/Configuration:-Layout
@@ -260,7 +249,7 @@ binds {
 // https://github.com/YaLTeR/niri/wiki/Configuration:-Miscellaneous#environment
 
     environment {
-
+        "PROTON_ENABLE_WAYLAND" "1"
     }
 
     hotkey-overlay {
