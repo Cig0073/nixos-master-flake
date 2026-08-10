@@ -65,6 +65,7 @@
           ./modules/base-config.nix
           ./modules/limine/limine.nix
           ./modules/gaming.nix
+          ./modules/gaming-liberated.nix
    	      ./modules/sunshine.nix
           ./modules/niri/niri.nix
           ./modules/zapret.nix
