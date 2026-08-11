@@ -1,6 +1,6 @@
 
 # /etc/nixos/modules/gaming-liberated.nix
-{ pkgs, ... }:
+{ pkgs, lib, ... }:
 
 let
   targetUser = "cig0073";
@@ -30,11 +30,30 @@ let
         "Backup completed with warnings. Check $LOG_FILE" -i dialog-warning || true
     fi
   '';
+
+  # Wrap nixpkgs' hydra-launcher to supply runtime PATH dependencies
+  hydraLauncherWrapped = pkgs.symlinkJoin {
+    name = "hydra-launcher-wrapped";
+    paths = [ pkgs.hydralauncher ];
+    nativeBuildInputs = [ pkgs.makeWrapper ];
+    postBuild = ''
+      wrapProgram $out/bin/hydralauncher \
+        --prefix PATH : ${lib.makeBinPath [
+          pkgs.umu-launcher
+          pkgs.proton-ge-custom
+          pkgs.python3
+          pkgs.bash
+          pkgs.coreutils
+          pkgs.vulkan-tools
+          pkgs.zenity
+        ]}
+    '';
+  };
 in
 {
   # Install the liberated gaming stack
   environment.systemPackages = with pkgs; [
-    hydralauncher
+    hydraLauncherWrapped
     ludusavi
     ludusaviAutoBackup
     

@@ -102,6 +102,7 @@
     tldr
     wl-clipboard
     fastfetch
+    comma
   ];
 
   # Enable the OpenSSH daemon.
