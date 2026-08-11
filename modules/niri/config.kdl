@@ -1,4 +1,4 @@
-// Niri configuration for CachyOS
+//  Niri configuration for CachyOS
 // For documentation and full reference, see: https://github.com/YaLTeR/niri/wiki
 
 // ────────────── Input Configuration ──────────────
@@ -170,6 +170,10 @@ binds {
     CTRL+ALT+DELETE                     { quit; } // Also quits Niri
     MOD+SHIFT+P                         { power-off-monitors; } // Turn off screens (useful for OLED or privacy)
     MOD+O                               repeat=false { toggle-overview; }
+
+    // DMS SHELL SPECIFIC CALLS
+    MOD+V                               { spawn-sh "dms ipc clipboard toggle"; }
+    MOD+P                               { spawn-sh "dms ipc powermenu toggle"; }
 }
 
 // ────────────── Startup Applications ──────────────
@@ -250,6 +254,9 @@ binds {
 
     environment {
         "PROTON_ENABLE_WAYLAND" "1"
+        "PROTON_DXVK_LOWLATENCY" "1"
+        "PROTON_FSR4_UPGRADE" "1"
+        "PROTON_MLFG_UPGRADE" "1"
     }
 
     hotkey-overlay {

@@ -43,6 +43,7 @@ in
     winetricks
     heroic
     lutris
+    umu-launcher
   ];
 
   # Enable GameMode

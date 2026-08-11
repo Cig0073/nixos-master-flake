@@ -1,4 +1,4 @@
-{ ... }:
+{ config, ... }:
 
 {
   boot = {
@@ -6,9 +6,9 @@
   	loader.efi.canTouchEfiVariables = true;
     loader.limine = {
       enable = true;
-	    style.interface.branding = "NixPal";
+	    style.interface.branding = "Welcome to " + config.networking.hostName + ". May you become a son of liberty!";
 	    style.wallpapers = [ ./dark-messiah-hl.jpg ];
-	    style.graphicalTerminal.background = "00000000";
+	    style.graphicalTerminal.background = "FF000000";
       efiSupport = true;
       maxGenerations = 10;
     };
