@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ pkgs, inputs, ... }:
 {
   nixpkgs.config.allowUnfree = true;
 
@@ -10,6 +10,11 @@
     "impure-derivations"  # Allows running derivations that pull outside system contexts safely
     "recursive-nix"       # Permits executing Nix builds nested within another running Nix derivation
   ];
+
+  imports = [
+    inputs.nix-index-database.nixosModules.nix-index
+  ];
+  programs.nix-index-database.comma.enable = true;  
 
   # Set your time zone.
   time.timeZone = "Europe/Istanbul";

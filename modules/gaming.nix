@@ -1,6 +1,15 @@
 { pkgs, ...}:
 
 {
+
+  environment.sessionVariables = {
+    PROTON_ENABLE_WAYLAND = "1";
+    PROTON_DXVL_LOWLATENCY = "1";
+    PROTON_FSR4_UPGRADE = "1";
+    PROTON_MLFG_UPGRADE = "1";
+    MANGOHUD = "1";
+  };
+  
   programs.steam = {
     enable = true;
     localNetworkGameTransfers.openFirewall = true;

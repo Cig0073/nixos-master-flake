@@ -28,11 +28,14 @@
       url = "github:peternaame-boop/ytm-player";	
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    nix-index-database.url = "github:nix-community/nix-index-database";
+    nix-index-database.inputs.nixpkgs.follows = "nixpkgs";
     millennium.url = "github:SteamClientHomebrew/Millennium?dir=packages/nix";
+    millennium.inputs.nixpkgs.follows = "nixpkgs";
     nixos-hardware.url = "github:NixOS/nixos-hardware/master";
   };
 
-  outputs = { self, nixpkgs, jovian-nixos, chaotic, arion, millennium, home-manager, ytm-player, nixos-hardware, ... }@inputs:
+  outputs = { self, nixpkgs, jovian-nixos, chaotic, arion, millennium, home-manager, ytm-player, nixos-hardware, nix-index-database, ... }@inputs:
     let
       inherit (chaotic.vendored) jovian;
     in
@@ -83,11 +86,32 @@
         ];
       };
 
-	    nixos-vault = nixpkgs.lib.nixosSystem {
-	      system = "x86_64-linux";
-	      specialArgs = { inherit inputs; }; 
+      # Nixos Vault is based on Nixos-chell. Doubles as my main pc.
+      nixos-vault = nixpkgs.lib.nixosSystem {
+    		system = "x86_64-linux";
+    		specialArgs = { inherit inputs; };
         modules = [ 
+          ./nixos-chell
           ./nixos-vault
+          ./modules/base-config.nix
+          ./modules/limine/limine.nix
+          ./modules/gaming.nix
+          ./modules/gaming-liberated.nix
+   	      ./modules/sunshine.nix
+          ./modules/niri/niri.nix
+          ./modules/zapret.nix
+          # ./modules/fake-suspend.nix
+          home-manager.nixosModules.default
+          chaotic.nixosModules.default
+   	  	  inputs.nixkit.nixosModules.default
+          {
+        	  nixpkgs.overlays = [ ytm-player.overlays.default ];
+        	  home-manager = {
+        	    useGlobalPkgs = true;
+        	    useUserPackages = true;
+        	    users.cig0073 = ./modules/home.nix; # replace <USERNAME> with your actual username
+        	  };
+          }
         ];
       };
 

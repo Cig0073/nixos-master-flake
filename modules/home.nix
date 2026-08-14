@@ -1,7 +1,4 @@
-{ pkgs, config, ...}:
-let
-  niriShaderPath = "${config.xdg.configHome}/niri/shaders/kitty-matugen.glsl";
-in
+{ pkgs, ...}:
 {
   home.packages = with pkgs; [
     jellyfin-tui
@@ -16,6 +13,22 @@ in
     mpv
     ueberzugpp
   ];
+
+  home.pointerCursor = {
+    package = pkgs.bibata-cursors;  # A modern, rounded material-style cursor
+    name = "Bibata-Modern-Ice";     # Or "Bibata-Modern-Classic" for dark mode
+    size = 24;                      # Keep this consistent across your system
+  
+    # This tells GTK and XWayland (Steam) to respect the cursor
+    gtk.enable = true;
+    x11.enable = true;
+  };
+
+# Export environment variables so older XWayland apps don't get confused
+  home.sessionVariables = {
+    XCURSOR_THEME = "Bibata-Modern-Ice";
+    XCURSOR_SIZE = "24";
+  };
 
   programs.qutebrowser = {
     enable = true;
@@ -140,6 +153,8 @@ in
       include dank-tabs.conf
     '';
     };
+
+  services.linux-wallpaperengine.enable = true;
 
   # ------- Niri glsl shaders ends here!! -------
   # This value determines the Home Manager release that your

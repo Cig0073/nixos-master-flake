@@ -37,16 +37,24 @@ let
     paths = [ pkgs.hydralauncher ];
     nativeBuildInputs = [ pkgs.makeWrapper ];
     postBuild = ''
+      # 1. Wrap the binary with PATH and Proton extra compat paths
       wrapProgram $out/bin/hydralauncher \
         --prefix PATH : ${lib.makeBinPath [
           pkgs.umu-launcher
-          pkgs.proton-ge-custom
           pkgs.python3
           pkgs.bash
           pkgs.coreutils
           pkgs.vulkan-tools
           pkgs.zenity
-        ]}
+          pkgs.gamemode
+        ]} \
+        --prefix STEAM_EXTRA_COMPAT_TOOLS_PATHS : "${pkgs.proton-ge-custom}:${pkgs.proton-cachyos}"
+
+      # 2. Patch the .desktop shortcut so application menus run the wrapped executable
+      if [ -d "$out/share/applications" ]; then
+        substituteInPlace $out/share/applications/*.desktop \
+          --replace-fail "Exec=hydralauncher" "Exec=$out/bin/hydralauncher"
+      fi
     '';
   };
 in
@@ -77,26 +85,7 @@ in
     };
   };
 
-  # 2. PERIODIC BACKGROUND TIMER: Runs every 30 minutes while the PC is on
-  systemd.user.services.ludusavi-autobackup = {
-    description = "Automated Ludusavi Save Game Backup";
-    serviceConfig = {
-      Type = "oneshot";
-      ExecStart = "${ludusaviAutoBackup}/bin/ludusavi-auto-backup";
-    };
-  };
-
-  systemd.user.timers.ludusavi-autobackup = {
-    description = "Timer for Automated Ludusavi Save Game Backup";
-    wantedBy = [ "timers.target" ];
-    timerConfig = {
-      OnBootSec = "5m";
-      OnUnitActiveSec = "30m";
-      Persistent = true;
-    };
-  };
-
-  # 3. TRIGGER ON SLEEP / SHUTDOWN: Backs up saves before system sleep or shutdown
+  # 2. TRIGGER ON SLEEP / SHUTDOWN: Backs up saves before system sleep or shutdown
   systemd.services.ludusavi-pre-suspend = {
     description = "Backup Game Saves Before System Sleep or Shutdown";
     wantedBy = [ "sleep.target" "shutdown.target" ];
