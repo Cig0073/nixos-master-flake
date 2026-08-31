@@ -37,7 +37,7 @@ let
     paths = [ pkgs.hydralauncher ];
     nativeBuildInputs = [ pkgs.makeWrapper ];
     postBuild = ''
-      # 1. Wrap the binary with PATH and Proton extra compat paths
+      # 1. Wrap the binary with PATH and Proton compatibility paths
       wrapProgram $out/bin/hydralauncher \
         --prefix PATH : ${lib.makeBinPath [
           pkgs.umu-launcher
@@ -50,10 +50,13 @@ let
         ]} \
         --prefix STEAM_EXTRA_COMPAT_TOOLS_PATHS : "${pkgs.proton-ge-custom}:${pkgs.proton-cachyos}"
 
-      # 2. Patch the .desktop shortcut so application menus run the wrapped executable
+      # 2. Copy the .desktop file and dynamically substitute any Exec= line
       if [ -d "$out/share/applications" ]; then
-        substituteInPlace $out/share/applications/*.desktop \
-          --replace-fail "Exec=hydralauncher" "Exec=$out/bin/hydralauncher"
+        for f in $out/share/applications/*.desktop; do
+          cp --remove-destination "$(readlink -f "$f")" "$f"
+          # Replaces 'Exec=<whatever>' with 'Exec=$out/bin/hydralauncher <flags>'
+          sed -i "s|^Exec=.*|Exec=$out/bin/hydralauncher %U|" "$f"
+        done
       fi
     '';
   };

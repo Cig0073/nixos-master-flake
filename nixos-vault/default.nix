@@ -1,4 +1,4 @@
-{ pkgs, config, ... }:
+{ pkgs, ... }:
 
 let
   tailnetDomain = "nixos.tail8a17d2.ts.net";
@@ -10,7 +10,11 @@ in
     rocmPackages.clr
   ];
 
-  services.tailscale.enable = true;
+  services.tailscale = {
+    enable = true;
+    permitCertUid = "caddy";  
+  };
+  networking.firewall.trustedInterfaces = [ "tailscale0" ];
 
   services.immich = {
     enable = true;
@@ -22,10 +26,8 @@ in
 
   services.nextcloud = {
     enable = true;
-    hostName = "nextcloud.${tailnetDomain}";      # Replace with your Tailscale IP or domain
+    hostName = tailnetDomain;      # Replace with your Tailscale IP or domain
     home = "/mnt/vault-storage/nextcloud";
-
-    # Automatic local database & Redis caching setup
     database.createLocally = true;
     configureRedis = true;
 
@@ -38,9 +40,31 @@ in
     };
 
     settings = {
-      trusted_domains = [ "nextcloud.${tailnetDomain}" ];
+      overwriteprotocol = "https";
+      trusted_domains = [
+        "127.0.0.1"
+        "localhost"
+        tailnetDomain
+      ];
     };
   };
+
+  services.nginx.virtualHosts."${tailnetDomain}" = {
+    listen = [{ addr = "127.0.0.1"; port = 8085; }];
+  };
+  
+  services.caddy = {
+    enable = true;
+    virtualHosts."${tailnetDomain}" = {
+      extraConfig = ''
+        tls {
+          get_certificate tailscale
+        }
+        reverse_proxy http://127.0.0.1:8085
+      '';
+    };
+  };
+  users.users.caddy.extraGroups = [ "tailscale" ];
 
   # Open Firewall ports for Nextcloud (HTTP/HTTPS) and Immich
   networking.firewall.allowedTCPPorts = [ 80 443 2283 ];

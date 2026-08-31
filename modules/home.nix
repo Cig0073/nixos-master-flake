@@ -9,7 +9,7 @@
     nil
     nixpkgs-fmt
     kdePackages.okular
-    moonlight-qt
+   # moonlight-qt
     mpv
     ueberzugpp
   ];

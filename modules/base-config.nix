@@ -45,7 +45,6 @@
   };
   # 2. Configure iwd to disable background periodic scanning
   networking.wireless.iwd = {
-    enable = true;
     settings = {
       Scan = {
         DisablePeriodicScan = true;
