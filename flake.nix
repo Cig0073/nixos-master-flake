@@ -86,6 +86,29 @@
         ];
       };
 
+      nixos-viscous = nixpkgs.lib.nixosSystem {
+    		system = "x86_64-linux";
+    		specialArgs = { inherit inputs; };
+        modules = [ 
+          ./nixos-viscous
+          ./modules/base-config.nix
+          ./modules/limine/limine.nix
+          ./modules/gaming.nix
+          ./modules/gaming-liberated.nix
+          home-manager.nixosModules.default
+          chaotic.nixosModules.default
+   	  	  inputs.nixkit.nixosModules.default
+          {
+        	  nixpkgs.overlays = [ ytm-player.overlays.default ];
+        	  home-manager = {
+        	    useGlobalPkgs = true;
+        	    useUserPackages = true;
+        	    users.cig0073 = ./modules/home.nix; # replace <USERNAME> with your actual username
+        	  };
+          }
+        ];
+      };
+
       # Nixos Vault is based on Nixos-chell. Doubles as my main pc.
       nixos-vault = nixpkgs.lib.nixosSystem {
     		system = "x86_64-linux";
