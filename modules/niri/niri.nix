@@ -42,7 +42,10 @@ in
     enable = true;
   };
 
-  environment.systemPackages = with pkgs; [ xwayland-satellite ];
+  environment.systemPackages = with pkgs; [ xwayland-satellite nautilus nautilus-python ];
+  services.gvfs.enable = true;
+  services.gnome.sushi.enable = true;
+  services.udisks2.enable = true;
 
   # Applies to all Home Manager profiles on this machine
   home-manager.sharedModules = [
