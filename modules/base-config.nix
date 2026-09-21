@@ -92,6 +92,19 @@
     shell = pkgs.fish;
   };
 
+  programs.appimage.enable = true;
+  programs.appimage.binfmt = true;
+  programs.appimage.package = pkgs.appimage-run.override 
+  {
+    extraPkgs = pkgs: 
+    [
+      pkgs.icu
+      pkgs.libxcrypt-legacy
+      pkgs.python312
+      pkgs.python312Packages.torch
+    ]; 
+  };
+
   zramSwap = {
     enable = true;
     memoryPercent = 100;
