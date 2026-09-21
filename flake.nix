@@ -122,7 +122,6 @@
           ./modules/gaming-liberated.nix
    	      ./modules/sunshine.nix
           ./modules/niri/niri.nix
-          ./modules/zapret.nix
           # ./modules/fake-suspend.nix
           home-manager.nixosModules.default
           chaotic.nixosModules.default
