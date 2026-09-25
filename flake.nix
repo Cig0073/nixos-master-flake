@@ -71,7 +71,7 @@
           ./modules/gaming-liberated.nix
    	      ./modules/sunshine.nix
           ./modules/niri/niri.nix
-          ./modules/zapret.nix
+          #./modules/zapret.nix
           home-manager.nixosModules.default
           chaotic.nixosModules.default
    	  	  inputs.nixkit.nixosModules.default
@@ -122,7 +122,7 @@
           ./modules/gaming-liberated.nix
    	      ./modules/sunshine.nix
           ./modules/niri/niri.nix
-          ./modules/zapret.nix
+          #./modules/zapret.nix
           # ./modules/fake-suspend.nix
           home-manager.nixosModules.default
           chaotic.nixosModules.default
@@ -145,7 +145,7 @@
         ./nixbook-air
         ./modules/gaming.nix
         ./modules/niri/niri.nix
-        ./modules/zapret.nix
+        #./modules/zapret.nix
         home-manager.nixosModules.default
         chaotic.nixosModules.default
         {
