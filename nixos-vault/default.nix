@@ -13,20 +13,17 @@ in
   services.ollama = {
     enable = true;
     package = pkgs.ollama-rocm;
-    
     # Optional: Automatically pull the light model on startup
     loadModels = [ "qwen2.5:3b" ];
-
-    # Optional: If you use a consumer GPU (like RX 6000/7000 or Steam Deck/ROG Ally iGPU) 
-    # that ROCm doesn't recognize out-of-the-box, uncomment the override line below:
-    # rocmOverrideGfx = "11.0.0"; # e.g. "10.3.0" for RDNA2 or "11.0.0" for RDNA3
   };
 
-  # Enable Docker
-  virtualisation.docker.enable = true; 
+  virtualisation.podman = {
+    enable = true;
+    dockerCompat = true;
+  };
 
   # Make sure the user is allowed to access GPU hardware render nodes
-  users.users.cig0073.extraGroups = [ "docker" "render" "video" ];
+  users.users.cig0073.extraGroups = [ "render" "video" "podman" ];
 
   services.tailscale = {
     enable = true;
