@@ -1,53 +1,54 @@
 { pkgs, ... }:
 let
-  # Path to your default config (can be a relative file in your repo or inline text)
-  defaultDmsConfig = ./dms-settings.json; 
-  # Or inline: pkgs.writeText "dms-config.json" ''{ "theme": "dark" }'';
+  defaultDmsConfig = ./dms-settings.json;
 in
 {
   programs.niri.enable = true;
-  security.polkit.enable = true; # polkit
-  services.gnome.gnome-keyring.enable = true; # secret service
+  security.polkit.enable = true;
+  services.gnome.gnome-keyring.enable = true;
 
+  # ── dms-shell (composited session manager) ────────────────────────────────
   programs.dms-shell = {
     enable = true;
-
     systemd = {
-      enable = true;             # Systemd service for auto-start
-      restartIfChanged = true;   # Auto-restart dms.service when dms-shell changes
+      enable           = true;
+      restartIfChanged = true;
     };
   };
 
-  services.displayManager.dms-greeter = {
-    enable = true;
-    compositor.name = "niri";  # Or "hyprland" or "sway"
-    configHome = "/home/cig0073";
-  };
-
+  # ── Display manager ───────────────────────────────────────────────────────
   services.displayManager = {
+    dms-greeter = {
+      enable         = true;
+      compositor.name = "niri";
+      configHome     = "/home/cig0073";
+    };
     autoLogin = {
       enable = true;
-      user = "cig0073";
+      user   = "cig0073";
     };
     defaultSession = "niri";
   };
-  programs.kdeconnect = {
-    enable = true;
-  };
 
-  environment.systemPackages = with pkgs; [ xwayland-satellite nautilus nautilus-python ];
-  services.gvfs.enable = true;
+  # ── Extras ────────────────────────────────────────────────────────────────
+  programs.kdeconnect.enable = true;
+
+  environment.systemPackages = with pkgs; [
+    xwayland-satellite
+    nautilus
+    nautilus-python
+  ];
+
+  services.gvfs.enable    = true;
   services.gnome.sushi.enable = true;
   services.udisks2.enable = true;
 
-  # Applies to all Home Manager profiles on this machine
+  # ── Home Manager: deploy niri config and seed dms config ─────────────────
   home-manager.sharedModules = [
-    #  Explicitly request Home Manager's scope here
     ({ config, lib, ... }: {
-      
       xdg.configFile."niri/config.kdl" = {
         source = ./config.kdl;
-        force = true;
+        force  = true;
       };
 
       home.activation.initDmsConfig = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
@@ -61,7 +62,6 @@ in
           $DRY_RUN_CMD chmod 644 "$TARGET_FILE"
         fi
       '';
-
     })
   ];
 }

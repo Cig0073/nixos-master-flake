@@ -1,47 +1,34 @@
-{config, pkgs, ...}:
-
+{ config, pkgs, ... }:
 {
-  imports =
-  [ # Include the results of the hardware scan.
+  imports = [
     ./hardware-configuration.nix
+    ../modules/profiles/plasma-bigscreen.nix
   ];
 
-  nixpkgs.config.allowUnfree = true;
+  # Boot straight into the Bigscreen session
+  services.displayManager.defaultSession = "plasma-bigscreen-wayland";
 
-  hardware.graphics.enable = true;  
+  # ── NVIDIA hybrid graphics (legacy 580 driver + Intel iGPU) ──────────────
   services.xserver.videoDrivers = [ "nvidia" ];
   hardware.nvidia = {
     modesetting.enable = true;
-    open = false;
-    nvidiaSettings = true;
-    package = config.boot.kernelPackages.nvidiaPackages.legacy_580;
+    open               = false;
+    nvidiaSettings     = true;
+    package            = config.boot.kernelPackages.nvidiaPackages.legacy_580;
     prime = {
-      sync.enable = true;
-      intelBusId = "PCI:0@0:2:0";
-      nvidiaBusId = "PCI:1@0:0:0";
+      sync.enable  = true;
+      intelBusId   = "PCI:0@0:2:0";
+      nvidiaBusId  = "PCI:1@0:0:0";
     };
   };
 
   environment.sessionVariables = {
     __VK_LAYER_NV_optimus = "NVIDIA_only";
-    # Force all modern GTK4 apps to render cleanly without a 3D compositor
-    GSK_RENDERER = "cairo";
+    # Force GTK4 apps to use the Cairo renderer (avoids 3D-compositor dependency)
+    GSK_RENDERER          = "cairo";
   };
 
-  services.desktopManager.plasma6.enable = true;
-  services.displayManager.sddm = {
-    enable = true;
-    wayland.enable = true;
-  };
-
-  services.displayManager = {
-    defaultSession = "plasma-bigscreen-wayland";
-    sessionPackages = [ pkgs.kdePackages.plasma-bigscreen ];
-  };
-  
-  xdg.portal.configPackages = [ pkgs.kdePackages.plasma-bigscreen ];
-
-  # Apply the overlay fix to patch in the missing KDE Connect dependency
+  # ── Fix missing KDE Connect dependency in plasma-bigscreen ────────────────
   nixpkgs.overlays = [
     (final: prev: {
       kdePackages = prev.kdePackages // {
@@ -55,5 +42,6 @@
       };
     })
   ];
-}
 
+  system.stateVersion = "26.05";
+}

@@ -1,24 +1,19 @@
-# Edit this configuration file to define what should be installed on
-# your system. Help is available in the configuration.nix(5) man page, on
-# https://search.nixos.org/options and in the NixOS manual (`nixos-help`).
-
 { pkgs, ... }:
-
 {
-  imports =
-    [ # Include the results of the hardware scan.
-      ./hardware-configuration.nix
-  ];
+  imports = [ ./hardware-configuration.nix ];
 
   boot.kernelPackages = pkgs.linuxPackages_latest;
 
-  services.handheld-daemon.user = "cig0073";
-  services.handheld-daemon.enable = true;
+  # Handheld daemon (TDP/fan control for ROG Ally)
+  services.handheld-daemon = {
+    enable = true;
+    user   = "cig0073";
+  };
+
+  # ASUS system daemon (keyboard backlight, battery charge limit, etc.)
   services.asusd.enable = true;
 
-  security.rtkit.enable = true;
+  # rtkit already enabled in base-config.nix
 
-  system.stateVersion = "26.05"; # Did you read the comment?
-
+  system.stateVersion = "26.05";
 }
-

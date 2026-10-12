@@ -1,12 +1,11 @@
-
-# /etc/nixos/modules/gaming-liberated.nix
+# gaming-liberated.nix — DRM-free / GOG / pirate-friendly gaming stack
 { pkgs, lib, ... }:
 
 let
   targetUser = "cig0073";
-  backupDir = "/home/${targetUser}/Backups/SaveGames";
+  backupDir  = "/home/${targetUser}/Backups/SaveGames";
 
-  # Automated Ludusavi backup runner with desktop notifications
+  # Automated Ludusavi backup with desktop notifications
   ludusaviAutoBackup = pkgs.writeShellScriptBin "ludusavi-auto-backup" ''
     set -euo pipefail
 
@@ -14,12 +13,10 @@ let
     export XDG_RUNTIME_DIR="/run/user/$USER_ID"
     export HOME="/home/${targetUser}"
 
-    # Ensure local backup directory exists
     ${pkgs.coreutils}/bin/mkdir -p "${backupDir}"
 
     LOG_FILE="/tmp/ludusavi-backup.log"
 
-    # Run headless Ludusavi backup
     if ${pkgs.ludusavi}/bin/ludusavi backup --force --path "${backupDir}" > "$LOG_FILE" 2>&1; then
       ${pkgs.libnotify}/bin/notify-send -u low -a "Ludusavi" \
         "Saves Backed Up" \
@@ -31,13 +28,12 @@ let
     fi
   '';
 
-  # Wrap nixpkgs' hydra-launcher to supply runtime PATH dependencies
+  # Wrap hydra-launcher to supply runtime PATH + Proton compat paths
   hydraLauncherWrapped = pkgs.symlinkJoin {
-    name = "hydra-launcher-wrapped";
-    paths = [ pkgs.hydralauncher ];
+    name              = "hydra-launcher-wrapped";
+    paths             = [ pkgs.hydralauncher ];
     nativeBuildInputs = [ pkgs.makeWrapper ];
     postBuild = ''
-      # 1. Wrap the binary with PATH and Proton compatibility paths
       wrapProgram $out/bin/hydralauncher \
         --prefix PATH : ${lib.makeBinPath [
           pkgs.umu-launcher
@@ -50,11 +46,9 @@ let
         ]} \
         --prefix STEAM_EXTRA_COMPAT_TOOLS_PATHS : "${pkgs.proton-ge-custom}:${pkgs.proton-cachyos}"
 
-      # 2. Copy the .desktop file and dynamically substitute any Exec= line
       if [ -d "$out/share/applications" ]; then
         for f in $out/share/applications/*.desktop; do
           cp --remove-destination "$(readlink -f "$f")" "$f"
-          # Replaces 'Exec=<whatever>' with 'Exec=$out/bin/hydralauncher <flags>'
           sed -i "s|^Exec=.*|Exec=$out/bin/hydralauncher %U|" "$f"
         done
       fi
@@ -62,39 +56,31 @@ let
   };
 in
 {
-  # Install the liberated gaming stack
+  # ── Packages ──────────────────────────────────────────────────────────────
+  # Note: lutris and gamemode are already provided by gaming.nix
   environment.systemPackages = with pkgs; [
     hydraLauncherWrapped
     ludusavi
     ludusaviAutoBackup
-    
-    # Crucial utilities for pirate repacks needing missing DLLs (DirectX, VCRedist, PhysX, XACT)
-    protontricks
+    protontricks  # Missing DLLs (DirectX, VCRedist, PhysX, XACT)
     winetricks
     heroic
-    lutris
     umu-launcher
   ];
 
-  # Enable GameMode
-  programs.gamemode.enable = true;
+  # ── Triple-lock automatic save backups ────────────────────────────────────
 
-  # --- TRIPLE-LOCK AUTOMATIC SAVE BACKUPS ---
+  # 1. On game exit — GameMode triggers this instantly when a game closes
+  programs.gamemode.settings.custom.end =
+    "${ludusaviAutoBackup}/bin/ludusavi-auto-backup";
 
-  # 1. TRIGGER ON GAME EXIT: GameMode runs this script instantly when a game closes
-  programs.gamemode.settings = {
-    custom = {
-      end = "${ludusaviAutoBackup}/bin/ludusavi-auto-backup";
-    };
-  };
-
-  # 2. TRIGGER ON SLEEP / SHUTDOWN: Backs up saves before system sleep or shutdown
+  # 2. On sleep / shutdown — backs up before the system goes offline
   systemd.services.ludusavi-pre-suspend = {
     description = "Backup Game Saves Before System Sleep or Shutdown";
-    wantedBy = [ "sleep.target" "shutdown.target" ];
-    before = [ "sleep.target" "shutdown.target" ];
+    wantedBy    = [ "sleep.target" "shutdown.target" ];
+    before      = [ "sleep.target" "shutdown.target" ];
     serviceConfig = {
-      Type = "oneshot";
+      Type      = "oneshot";
       ExecStart = "${ludusaviAutoBackup}/bin/ludusavi-auto-backup";
     };
   };
