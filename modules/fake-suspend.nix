@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ config, pkgs, ... }:
 {
   # fake-suspend.nix — Server-friendly pseudo-suspend
   # Instead of real suspend (which would kill network), this:
@@ -23,7 +23,7 @@
     serviceConfig.ExecStart = [
       ""  # Clear the default ExecStart
       (pkgs.writeShellScript "pseudo-suspend" ''
-        USERNAME="cig0073"
+        USERNAME="${config.nixcore.username}"
         USER_UID=$(id -u "$USERNAME")
         export XDG_RUNTIME_DIR="/run/user/$USER_UID"
         export WAYLAND_DISPLAY="wayland-1"

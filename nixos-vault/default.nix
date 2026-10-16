@@ -1,8 +1,4 @@
-{ pkgs, ... }:
-
-let
-  tailnetDomain = "nixos.tail8a17d2.ts.net";
-in
+{ config, pkgs, ... }:
 {
   imports = [
     # vault runs on chell's hardware profile and inherits its base setup
@@ -26,7 +22,7 @@ in
     dockerCompat = true;
   };
 
-  users.users.cig0073.extraGroups = [ "render" "video" "podman" ];
+  users.users.${config.nixcore.username}.extraGroups = [ "render" "video" "podman" ];
 
   # ── Media: Immich ─────────────────────────────────────────────────────────
   services.immich = {
@@ -34,14 +30,14 @@ in
     host          = "0.0.0.0";
     port          = 2283;
     openFirewall  = true;
-    mediaLocation = "/mnt/vault-storage/immich";
+    mediaLocation = "${config.nixcore.vaultStorageDir}/immich";
   };
 
   # ── Cloud: Nextcloud (served over Tailscale) ──────────────────────────────
   services.nextcloud = {
     enable             = true;
-    hostName           = tailnetDomain;
-    home               = "/mnt/vault-storage/nextcloud";
+    hostName           = config.nixcore.tailnetDomain;
+    home               = "${config.nixcore.vaultStorageDir}/nextcloud";
     database.createLocally = true;
     configureRedis     = true;
     maxUploadSize      = "10G";

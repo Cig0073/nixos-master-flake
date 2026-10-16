@@ -1,5 +1,5 @@
 # gaming-jovian.nix — Jovian NixOS gaming profile (HTPC / Steam Deck-like)
-{ lib, pkgs, ... }:
+{ config, lib, pkgs, ... }:
 {
   system.activationScripts.print-jovian = {
     text = builtins.trace "building the jovian configuration..." "";
@@ -29,14 +29,14 @@
     enable         = true;
     autoStart      = true;
     desktopSession = "plasma-bigscreen-wayland";
-    user           = "cig0073";
+    user           = config.nixcore.username;
     environment.STEAM_EXTRA_COMPAT_TOOLS_PATHS =
       "/run/current-system/sw/share/steam/compatibilitytools.d";
   };
 
   jovian.decky-loader = {
     enable = true;
-    user   = "cig0073";
+    user   = config.nixcore.username;
   };
 
   jovian.steamos.useSteamOSConfig = true;

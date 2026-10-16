@@ -1,9 +1,9 @@
 # gaming-liberated.nix — DRM-free / GOG / pirate-friendly gaming stack
-{ pkgs, lib, ... }:
+{ config, pkgs, lib, ... }:
 
 let
-  targetUser = "cig0073";
-  backupDir  = "/home/${targetUser}/Backups/SaveGames";
+  targetUser = config.nixcore.username;
+  backupDir  = config.nixcore.saveBackupDir;
 
   # Automated Ludusavi backup with desktop notifications
   ludusaviAutoBackup = pkgs.writeShellScriptBin "ludusavi-auto-backup" ''

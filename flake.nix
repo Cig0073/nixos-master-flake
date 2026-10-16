@@ -46,30 +46,37 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    # Declarative disk partitioning
+    disko = {
+      url = "github:nix-community/disko";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     # Hardware-specific modules
     nixos-hardware.url = "github:NixOS/nixos-hardware/master";
   };
 
   outputs = { self, nixpkgs, jovian-nixos, chaotic, arion, millennium,
               home-manager, ytm-player, nixos-hardware, nix-index-database,
-              ... }@inputs:
+              disko, ... }@inputs:
     let
       # Shared specialArgs passed to every host
       sharedArgs = { inherit inputs; };
 
       # Shared Home Manager inline module (ytm-player overlay + HM defaults)
       # Used by every desktop/laptop host.
-      hmSharedModule = {
+      hmSharedModule = { config, ... }: {
         nixpkgs.overlays = [ ytm-player.overlays.default ];
         home-manager = {
           useGlobalPkgs    = true;
           useUserPackages  = true;
-          users.cig0073    = ./modules/home.nix;
+          users.${config.nixcore.username} = ./modules/home.nix;
         };
       };
 
       # Common modules shared by every desktop-class host
       desktopModules = [
+        disko.nixosModules.default
         ./modules/base-config.nix
         ./modules/limine/limine.nix
         ./modules/gaming.nix
@@ -89,6 +96,7 @@
           system     = "x86_64-linux";
           specialArgs = sharedArgs;
           modules    = [
+            disko.nixosModules.default
             jovian-nixos.nixosModules.default
             chaotic.nixosModules.default
             inputs.nixkit.nixosModules.default
@@ -134,6 +142,7 @@
             ./nixos-vault
             ./modules/sunshine.nix
             ./modules/niri/niri.nix
+            ./modules/zapret.nix
           ];
         };
 
@@ -154,6 +163,7 @@
           system     = "x86_64-linux";
           specialArgs = sharedArgs;
           modules    = [
+            disko.nixosModules.default
             nixos-hardware.nixosModules.asus-ally-rc71l
             ./nixos-ally
             ./modules/base-config.nix

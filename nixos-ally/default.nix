@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ config, pkgs, ... }:
 {
   imports = [ ./hardware-configuration.nix ];
 
@@ -7,7 +7,7 @@
   # Handheld daemon (TDP/fan control for ROG Ally)
   services.handheld-daemon = {
     enable = true;
-    user   = "cig0073";
+    user   = config.nixcore.username;
   };
 
   # ASUS system daemon (keyboard backlight, battery charge limit, etc.)

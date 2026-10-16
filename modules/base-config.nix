@@ -1,8 +1,9 @@
-{ pkgs, inputs, ... }:
+{ config, pkgs, inputs, ... }:
 {
   nixpkgs.config.allowUnfree = true;
 
   imports = [
+    ./options.nix
     inputs.nix-index-database.nixosModules.nix-index
   ];
   programs.nix-index-database.comma.enable = true;
@@ -97,7 +98,7 @@
   };
 
   # ── User ──────────────────────────────────────────────────────────────────
-  users.users.cig0073 = {
+  users.users.${config.nixcore.username} = {
     isNormalUser = true;
     extraGroups  = [ "networkmanager" "wheel" "video" "input" "uinput" ];
     shell        = pkgs.fish;

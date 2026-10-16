@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ config, pkgs, ... }:
 let
   defaultDmsConfig = ./dms-settings.json;
 in
@@ -21,11 +21,11 @@ in
     dms-greeter = {
       enable         = true;
       compositor.name = "niri";
-      configHome     = "/home/cig0073";
+      configHome     = config.nixcore.userHome;
     };
     autoLogin = {
       enable = true;
-      user   = "cig0073";
+      user   = config.nixcore.username;
     };
     defaultSession = "niri";
   };
