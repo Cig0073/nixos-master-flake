@@ -3,6 +3,7 @@
   imports = [
     ./hardware-configuration.nix
     ./filesystems.nix
+    ./disko.nix
     ../modules/profiles/plasma-bigscreen.nix
   ];
 

@@ -1,8 +1,9 @@
 { config, pkgs, ... }:
 {
   imports = [
-    # vault runs on chell's hardware profile and inherits its base setup
+    # vault runs on chell's hardware profile and inherits its base setup + disko.nix
     ../nixos-chell/default.nix
+    ./disko-storage.nix
     ./filesystems.nix
   ];
 
