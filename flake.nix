@@ -174,6 +174,27 @@
             hmSharedModule
           ];
         };
+
+        # ── nixos-deck ─────────────────────────────────────────────────────
+        # Valve Steam Deck (LCD & OLED) — Jovian + Plasma Mobile + Retro Gaming
+        nixos-deck = nixpkgs.lib.nixosSystem {
+          system     = "x86_64-linux";
+          specialArgs = sharedArgs;
+          modules    = [
+            disko.nixosModules.default
+            jovian-nixos.nixosModules.default
+            chaotic.nixosModules.default
+            inputs.nixkit.nixosModules.default
+            ./nixos-deck
+            ./modules/base-config.nix
+            ./modules/gaming.nix
+            ./modules/gaming-jovian.nix
+            ./modules/retro-deck.nix
+            ./modules/limine/limine.nix
+            home-manager.nixosModules.default
+            hmSharedModule
+          ];
+        };
       };
     };
 }
