@@ -23,7 +23,7 @@ writeShellScriptBin "deck-qam" ''
     --text-color=cbd5e1ff
     --prompt-color=38bdf8ff
     --selection-color=1e3a5fee
-    --selection-text-color=fffffffff
+    --selection-text-color=ffffffff
     --selection-match-color=38bdf8ff
     --match-color=38bdf8ff
     --border-color=38bdf866
