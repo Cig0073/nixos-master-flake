@@ -3,45 +3,125 @@
 writeShellScriptBin "deck-qam" ''
   export PATH="${lib.makeBinPath [ fuzzel procps ryzenadj brightnessctl wireplumber libnotify systemd ]}:$PATH"
 
-  CHOICE=$(printf "1. ✖ Force Quit Game (Return to Menu)\n2. 📊 Toggle MangoHud Stats\n3. ⚡ Set TDP Limit\n4. ☀ Display Brightness\n5. 🔊 Volume Control\n6. 🖥 Switch to Plasma Mobile Desktop\n7. ⏻ Power Menu" | fuzzel -d -p "QAM 󰊴 " --width 40 --lines 7 --font "Sans:size=14")
+  # SteamOS-style dark acrylic theme with rounded pill selection
+  FUZZEL_THEME=(
+    --dmenu
+    --font="Sans:size=13"
+    --width=46
+    --horizontal-pad=24
+    --vertical-pad=18
+    --inner-pad=10
+    --line-height=34
+    --border-width=2
+    --border-radius=18
+    --selection-radius=10
+    --anchor=top-right
+    --x-margin=24
+    --y-margin=24
+    --layer=overlay
+    --background-color=131620f0
+    --text-color=cbd5e1ff
+    --prompt-color=38bdf8ff
+    --selection-color=1e3a5fee
+    --selection-text-color=fffffffff
+    --selection-match-color=38bdf8ff
+    --match-color=38bdf8ff
+    --border-color=38bdf866
+  )
+
+  MENU_ITEMS=(
+    "󰈆   Force Quit Game           [Kill Emulator]"
+    "󰍹   Performance Overlay       [Cycle MangoHud]"
+    "󰓅   Thermal & TDP Limit       [5W / 8W / 12W / 15W]"
+    "󰃟   Display Brightness        [Adjust Level]"
+    "󰕾   Audio Volume              [PipeWire Level]"
+    "󰌢   Switch to Desktop         [Plasma Mobile]"
+    "󰐥   System Power              [Sleep / Reboot / Off]"
+  )
+
+  CHOICE=$(printf "%s\n" "''${MENU_ITEMS[@]}" | fuzzel "''${FUZZEL_THEME[@]}" -p "󰊴  QUICK ACCESS  " --lines=7)
 
   case "$CHOICE" in
     *"Force Quit"*)
       pkill -9 -f "retroarch|duckstation|pcsx2|dolphin-emu|ppsspp|ryujinx|eden|mupen64plus|flycast|es-de|pegasus" || true
-      notify-send "QAM" "Emulators stopped" -t 1500
+      notify-send "Quick Access" "Active game force-quit" -t 1500
       ;;
-    *"Toggle MangoHud"*)
+
+    *"Performance Overlay"*)
       if [ -p /tmp/mangohud_pipe ]; then
         echo "toggle_hud" > /tmp/mangohud_pipe
       else
-        notify-send "MangoHud" "Toggled stats HUD" -t 1500
+        notify-send "Performance HUD" "Toggled stats display" -t 1500
       fi
       ;;
-    *"Set TDP Limit"*)
-      TDP=$(printf "5W (Ultra Battery / 8-16 Bit)\n8W (Retro 3D / PS1 / N64)\n12W (Balanced / PS2 / GameCube)\n15W (Full Van Gogh Power)" | fuzzel -d -p "Select TDP: " --width 40 --lines 4 --font "Sans:size=14")
+
+    *"Thermal & TDP"*)
+      TDP_OPTIONS=(
+        "󰾆   5W  - Ultra Battery   [8/16-Bit, GBA, NES]"
+        "󰾅   8W  - Retro 3D        [PS1, N64, Arcade]"
+        "󰓅  12W  - Balanced 3D     [PS2, GameCube, PSP]"
+        "󰓅  15W  - Maximum Power   [Wii, Switch, High-end]"
+      )
+      TDP=$(printf "%s\n" "''${TDP_OPTIONS[@]}" | fuzzel "''${FUZZEL_THEME[@]}" -p "⚡  TDP LIMIT  " --lines=4)
       case "$TDP" in
-        *"5W"*) ryzenadj --stapm-limit=5000 --fast-limit=5000 --slow-limit=5000 2>/dev/null && notify-send "TDP" "Set to 5W" -t 1500 ;;
-        *"8W"*) ryzenadj --stapm-limit=8000 --fast-limit=8000 --slow-limit=8000 2>/dev/null && notify-send "TDP" "Set to 8W" -t 1500 ;;
-        *"12W"*) ryzenadj --stapm-limit=12000 --fast-limit=12000 --slow-limit=12000 2>/dev/null && notify-send "TDP" "Set to 12W" -t 1500 ;;
-        *"15W"*) ryzenadj --stapm-limit=15000 --fast-limit=15000 --slow-limit=15000 2>/dev/null && notify-send "TDP" "Set to 15W" -t 1500 ;;
+        *"5W"*)  ryzenadj --stapm-limit=5000 --fast-limit=5000 --slow-limit=5000 2>/dev/null && notify-send "TDP" "Set to 5 Watts" -t 1500 ;;
+        *"8W"*)  ryzenadj --stapm-limit=8000 --fast-limit=8000 --slow-limit=8000 2>/dev/null && notify-send "TDP" "Set to 8 Watts" -t 1500 ;;
+        *"12W"*) ryzenadj --stapm-limit=12000 --fast-limit=12000 --slow-limit=12000 2>/dev/null && notify-send "TDP" "Set to 12 Watts" -t 1500 ;;
+        *"15W"*) ryzenadj --stapm-limit=15000 --fast-limit=15000 --slow-limit=15000 2>/dev/null && notify-send "TDP" "Set to 15 Watts (Uncapped)" -t 1500 ;;
       esac
       ;;
+
     *"Brightness"*)
-      BRIGHT=$(printf "+10%%\n-10%%\n100%%\n75%%\n50%%\n25%%" | fuzzel -d -p "Brightness: " --width 30 --lines 6 --font "Sans:size=14")
-      [ -n "$BRIGHT" ] && brightnessctl set "$BRIGHT"
-      ;;
-    *"Volume"*)
-      VOL=$(printf "+5%%\n-5%%\nMute Toggle\n100%%\n75%%\n50%%" | fuzzel -d -p "Volume: " --width 30 --lines 6 --font "Sans:size=14")
-      case "$VOL" in
-        *"Mute"*) wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle ;;
-        *) [ -n "$VOL" ] && wpctl set-volume @DEFAULT_AUDIO_SINK@ "$VOL" ;;
+      BRIGHT_OPTIONS=(
+        "󰃠   100% Maximum Brightness"
+        "󰃟    75% Standard Indoor"
+        "󰃞    50% Battery Saver"
+        "󰃝    25% Low Light"
+        "󰃠   +10% Increase"
+        "󰃞   -10% Decrease"
+      )
+      BRIGHT=$(printf "%s\n" "''${BRIGHT_OPTIONS[@]}" | fuzzel "''${FUZZEL_THEME[@]}" -p "☀  BRIGHTNESS  " --lines=6)
+      case "$BRIGHT" in
+        *"100%"*) brightnessctl set 100% ;;
+        *"75%"*)  brightnessctl set 75% ;;
+        *"50%"*)  brightnessctl set 50% ;;
+        *"25%"*)  brightnessctl set 25% ;;
+        *"+10%"*) brightnessctl set +10% ;;
+        *"-10%"*) brightnessctl set 10%- ;;
       esac
       ;;
+
+    *"Audio Volume"*)
+      VOL_OPTIONS=(
+        "󰕾   +5% Volume Up"
+        "󰖀   -5% Volume Down"
+        "󰖁   Toggle Mute"
+        "󰕾   100% Full"
+        "󰖀    70% Standard"
+        "󰕿    40% Quiet"
+      )
+      VOL=$(printf "%s\n" "''${VOL_OPTIONS[@]}" | fuzzel "''${FUZZEL_THEME[@]}" -p "🔊  VOLUME  " --lines=6)
+      case "$VOL" in
+        *"+5%"*)   wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%+ ;;
+        *"-5%"*)   wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%- ;;
+        *"Mute"*)  wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle ;;
+        *"100%"*)  wpctl set-volume @DEFAULT_AUDIO_SINK@ 1.0 ;;
+        *"70%"*)   wpctl set-volume @DEFAULT_AUDIO_SINK@ 0.7 ;;
+        *"40%"*)   wpctl set-volume @DEFAULT_AUDIO_SINK@ 0.4 ;;
+      esac
+      ;;
+
     *"Switch to Desktop"*)
       loginctl terminate-user "$USER" 2>/dev/null || notify-send "Switch to Desktop" "Session terminate requested"
       ;;
-    *"Power Menu"*)
-      PWR=$(printf "Suspend\nRestart\nPower Off" | fuzzel -d -p "Power: " --width 30 --lines 3 --font "Sans:size=14")
+
+    *"System Power"*)
+      PWR_OPTIONS=(
+        "󰤄   Suspend / Sleep"
+        "󰜉   Restart System"
+        "󰐥   Power Off"
+      )
+      PWR=$(printf "%s\n" "''${PWR_OPTIONS[@]}" | fuzzel "''${FUZZEL_THEME[@]}" -p "⏻  POWER  " --lines=3)
       case "$PWR" in
         *"Suspend"*) systemctl suspend ;;
         *"Restart"*) systemctl reboot ;;
