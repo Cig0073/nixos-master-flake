@@ -1,16 +1,61 @@
-{ lib, writeShellScriptBin, fuzzel, procps, ryzenadj, brightnessctl, wireplumber, libnotify, systemd }:
+{ lib, writeShellScriptBin, fuzzel, procps, ryzenadj, brightnessctl, wireplumber, libnotify, systemd, gawk }:
 
 writeShellScriptBin "deck-qam" ''
-  export PATH="${lib.makeBinPath [ fuzzel procps ryzenadj brightnessctl wireplumber libnotify systemd ]}:$PATH"
+  export PATH="${lib.makeBinPath [ fuzzel procps ryzenadj brightnessctl wireplumber libnotify systemd gawk ]}:$PATH"
 
-  # SteamOS-style dark acrylic theme with rounded pill selection
+  # ── Live Hardware Telemetry ───────────────────────────────────────────────
+  # Battery
+  BAT_CAP=$(cat /sys/class/power_supply/BAT*/capacity 2>/dev/null | head -n1)
+  BAT_STAT=$(cat /sys/class/power_supply/BAT*/status 2>/dev/null | head -n1)
+  if [ -n "$BAT_CAP" ]; then
+    if [ "$BAT_STAT" = "Charging" ]; then
+      BAT_INFO="󰂄 ''${BAT_CAP}%"
+    else
+      BAT_INFO="󰁹 ''${BAT_CAP}%"
+    fi
+  else
+    BAT_INFO="󰚥 AC"
+  fi
+
+  # Time
+  TIME_INFO=" $(date +%H:%M)"
+
+  # Volume
+  VOL_RAW=$(wpctl get-volume @DEFAULT_AUDIO_SINK@ 2>/dev/null)
+  if echo "$VOL_RAW" | grep -q "MUTED"; then
+    CURR_VOL="Muted"
+    VOL_ICON="󰖁"
+  else
+    VOL_PCT=$(echo "$VOL_RAW" | awk '{print int($2 * 100)}')
+    CURR_VOL="''${VOL_PCT:-70}%"
+    VOL_ICON="󰕾"
+  fi
+
+  # Brightness
+  CURR_BRIGHT=$(brightnessctl -m 2>/dev/null | cut -d, -f4)
+  [ -z "$CURR_BRIGHT" ] && CURR_BRIGHT="N/A"
+
+  # Active game / emulator
+  GAME_PID=$(pgrep -f "retroarch|duckstation|pcsx2|dolphin-emu|ppsspp|ryujinx|eden|mupen64plus|flycast" 2>/dev/null | head -n1)
+  if [ -n "$GAME_PID" ]; then
+    GAME_NAME=$(ps -p "$GAME_PID" -o comm= 2>/dev/null)
+    HEADER_STATUS="🎮 Playing: $GAME_NAME"
+    QUIT_LABEL="󰈆   Force Quit Active Game    [Running: $GAME_NAME]"
+  else
+    HEADER_STATUS="󰊴 Idle in Carousel"
+    QUIT_LABEL="󰈆   Force Quit Game           [No Game Running]"
+  fi
+
+  HEADER_MSG="  $HEADER_STATUS   •   $BAT_INFO   •   $VOL_ICON $CURR_VOL   •   ☀ $CURR_BRIGHT   •   $TIME_INFO"
+
+  # ── Fuzzel SteamOS Theme ──────────────────────────────────────────────────
   FUZZEL_THEME=(
     --dmenu
     --font="Sans:size=13"
-    --width=46
+    --width=48
     --horizontal-pad=24
     --vertical-pad=18
-    --inner-pad=10
+    --inner-pad=12
     --line-height=34
     --border-width=2
     --border-radius=18
@@ -27,14 +72,16 @@ writeShellScriptBin "deck-qam" ''
     --selection-match-color=38bdf8ff
     --match-color=38bdf8ff
     --border-color=38bdf866
+    --message-color=7dd3fcff
+    --mesg="$HEADER_MSG"
   )
 
   MENU_ITEMS=(
-    "󰈆   Force Quit Game           [Kill Emulator]"
+    "$QUIT_LABEL"
     "󰍹   Performance Overlay       [Cycle MangoHud]"
     "󰓅   Thermal & TDP Limit       [5W / 8W / 12W / 15W]"
-    "󰃟   Display Brightness        [Adjust Level]"
-    "󰕾   Audio Volume              [PipeWire Level]"
+    "󰃟   Display Brightness        [Currently: $CURR_BRIGHT]"
+    "󰕾   Audio Volume              [Currently: $CURR_VOL]"
     "󰌢   Switch to Desktop         [Plasma Mobile]"
     "󰐥   System Power              [Sleep / Reboot / Off]"
   )
@@ -80,7 +127,7 @@ writeShellScriptBin "deck-qam" ''
         "󰃠   +10% Increase"
         "󰃞   -10% Decrease"
       )
-      BRIGHT=$(printf "%s\n" "''${BRIGHT_OPTIONS[@]}" | fuzzel "''${FUZZEL_THEME[@]}" -p "☀  BRIGHTNESS  " --lines=6)
+      BRIGHT=$(printf "%s\n" "''${BRIGHT_OPTIONS[@]}" | fuzzel "''${FUZZEL_THEME[@]}" -p "☀  BRIGHTNESS (Now: $CURR_BRIGHT)  " --lines=6)
       case "$BRIGHT" in
         *"100%"*) brightnessctl set 100% ;;
         *"75%"*)  brightnessctl set 75% ;;
@@ -100,7 +147,7 @@ writeShellScriptBin "deck-qam" ''
         "󰖀    70% Standard"
         "󰕿    40% Quiet"
       )
-      VOL=$(printf "%s\n" "''${VOL_OPTIONS[@]}" | fuzzel "''${FUZZEL_THEME[@]}" -p "🔊  VOLUME  " --lines=6)
+      VOL=$(printf "%s\n" "''${VOL_OPTIONS[@]}" | fuzzel "''${FUZZEL_THEME[@]}" -p "🔊  VOLUME (Now: $CURR_VOL)  " --lines=6)
       case "$VOL" in
         *"+5%"*)   wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%+ ;;
         *"-5%"*)   wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%- ;;
