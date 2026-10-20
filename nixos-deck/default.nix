@@ -11,11 +11,16 @@
   # ── Steam Deck Hardware Integration (Jovian) ──────────────────────────────
   jovian.devices.steamdeck = {
     enable                     = true;
+    enableKernelPatches        = false; # Use pre-built binary kernel from cache (no compiling from source)
+    enableVendorDrivers        = false; # Use pre-built binary Mesa from cache
     enableSoundSupport         = true;
     enableOsFanControl         = true;
     enablePerfControlUdevRules = true;
     enableGyroDsuService       = true;
   };
+
+  # Pre-compiled binary kernel from official cache
+  boot.kernelPackages = pkgs.linuxPackages_latest;
 
   # ── Jovian Steam Gaming Mode ───────────────────────────────────────────────
   jovian.steam = {

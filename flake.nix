@@ -86,8 +86,29 @@
         inputs.nixkit.nixosModules.default
         hmSharedModule
       ];
+
+      pkgs = import nixpkgs {
+        system = "x86_64-linux";
+        config.allowUnfree = true;
+      };
     in
     {
+      packages.x86_64-linux = {
+        deck-qam      = pkgs.callPackage ./pkgs/deck-qam.nix { };
+        retro-session = pkgs.callPackage ./pkgs/retro-session.nix { };
+      };
+
+      apps.x86_64-linux = {
+        deck-qam = {
+          type = "app";
+          program = "${self.packages.x86_64-linux.deck-qam}/bin/deck-qam";
+        };
+        retro-session = {
+          type = "app";
+          program = "${self.packages.x86_64-linux.retro-session}/bin/retro-session";
+        };
+      };
+
       nixosConfigurations = {
 
         # ── nixos-fremont ──────────────────────────────────────────────────
