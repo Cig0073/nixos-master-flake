@@ -11,7 +11,7 @@ writeShellScriptBin "retro-session" ''
     GAMESCOPE_BIN="${gamescope}/bin/gamescope"
   fi
 
-  FRONTEND_BIN="${pegasus-frontend}/bin/pegasus-frontend"
+  FRONTEND_BIN="${pegasus-frontend}/bin/pegasus-fe"
 
   # Support --windowed for desktop testing without fullscreen takeover
   if [ "$1" = "--windowed" ] || [ "$1" = "-w" ]; then

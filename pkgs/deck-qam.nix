@@ -59,7 +59,11 @@ writeShellScriptBin "deck-qam" ''
     HEADER_STATUS="🎮 Playing: $GAME_NAME"
     QUIT_LABEL="󰈆   Force Quit Active Game    [Running: $GAME_NAME]"
   else
-    HEADER_STATUS="󰊴 Idle in Pegasus"
+    if pgrep -f "pegasus-fe" >/dev/null 2>&1; then
+      HEADER_STATUS="󰊴 Idle in Pegasus"
+    else
+      HEADER_STATUS="󰊴 Ready"
+    fi
     QUIT_LABEL="󰈆   Force Quit Game           [No Game Running]"
   fi
 
