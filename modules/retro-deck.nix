@@ -11,8 +11,8 @@ let
 
   retroDesktopItem = (pkgs.writeTextDir "share/wayland-sessions/retro-gaming.desktop" ''
     [Desktop Entry]
-    Name=Retro Gaming (Batocera Mode)
-    Comment=Direct GameScope EmulationStation Session
+    Name=Retro Gaming (Pegasus Mode)
+    Comment=Direct GameScope Pegasus Session
     Exec=${retroSessionScript}/bin/retro-session
     Type=Application
     DesktopNames=GameScope
@@ -36,9 +36,6 @@ in
 
   # Provide the retro-gaming wayland session to SDDM / DisplayManager
   services.displayManager.sessionPackages = [ retroDesktopItem ];
-
-  # Flatpak enabled so users can install ES-DE from flathub if desired
-  services.flatpak.enable = true;
 
   # Create standard Batocera/EmuDeck directory layout in home
   systemd.user.tmpfiles.users.${username}.rules = [

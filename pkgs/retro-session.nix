@@ -3,34 +3,36 @@
 writeShellScriptBin "retro-session" ''
   export MANGOHUD=1
   export MANGOHUD_CONFIG="output_folder=/tmp,toggle_hud=Shift_R+F12,position=top-left,battery,fps,frametime=0"
+  export QT_QPA_PLATFORM=wayland
 
-  if command -v es-de >/dev/null 2>&1; then
-    FRONTEND_CMD="es-de"
-  elif flatpak list 2>/dev/null | grep -q "org.es_de.emulationstation-de"; then
-    FRONTEND_CMD="flatpak run org.es_de.emulationstation-de"
-  elif command -v pegasus-frontend >/dev/null 2>&1; then
-    FRONTEND_CMD="pegasus-frontend"
-  else
-    FRONTEND_CMD="${retroarch-full}/bin/retroarch"
+  # Prefer privileged capabilities wrapper if running on system
+  GAMESCOPE_BIN="/run/wrappers/bin/gamescope"
+  if [ ! -x "$GAMESCOPE_BIN" ]; then
+    GAMESCOPE_BIN="${gamescope}/bin/gamescope"
   fi
+
+  FRONTEND_BIN="${pegasus-frontend}/bin/pegasus-frontend"
 
   # Support --windowed for desktop testing without fullscreen takeover
   if [ "$1" = "--windowed" ] || [ "$1" = "-w" ]; then
-    echo "Starting GameScope in a nested 1280x800 desktop window..."
-    exec ${gamescope}/bin/gamescope \
+    echo "Starting Pegasus Frontend in a nested 1280x800 desktop window..."
+    exec "$GAMESCOPE_BIN" \
       -w 1280 \
       -h 800 \
       -W 1280 \
       -H 800 \
-      -- $FRONTEND_CMD
+      --expose-wayland \
+      -- "$FRONTEND_BIN"
   else
-    exec ${gamescope}/bin/gamescope \
-      -e \
+    # Fullscreen standalone DRM/KMS mode on Steam Deck
+    # Note: Do NOT use -e (--steam) here since Pegasus runs standalone without Steam
+    exec "$GAMESCOPE_BIN" \
       -f \
       -w 1280 \
       -h 800 \
       -r 60 \
       --force-grab-cursor \
-      -- $FRONTEND_CMD
+      --expose-wayland \
+      -- "$FRONTEND_BIN"
   fi
 ''

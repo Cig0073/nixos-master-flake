@@ -49,16 +49,17 @@
   # Give user a brief bootloader window to select retro specialisation
   boot.loader.timeout = lib.mkDefault 4;
 
-  # ── Specialisation: Retro Gaming (Batocera Mode) ───────────────────────────
+  # ── Specialisation: Retro Gaming (Batocera / Pegasus Mode) ────────────────
   # Exposes a separate boot entry in the bootloader that boots straight into
-  # EmulationStation (ES-DE) in GameScope with native Quick Access Menu.
+  # Pegasus Frontend in GameScope with native Quick Access Menu.
   specialisation.retro.configuration = {
     system.nixos.tags = [ "retro-gaming" ];
 
-    # Disable Steam Big Picture autostart
+    # Disable Steam Big Picture autostart and desktop session overrides
     jovian.steam.autoStart = lib.mkForce false;
+    systemd.user.services.jovian-setup-desktop-session.enable = lib.mkForce false;
 
-    # Boot straight into the custom GameScope retro session via SDDM
+    # Boot straight into the custom GameScope Pegasus session via SDDM
     services.displayManager = {
       defaultSession = lib.mkForce "retro-gaming";
       autoLogin = {
@@ -69,8 +70,29 @@
         enable = true;
         autoLogin.relogin = true;
         wayland.enable    = true;
+        settings = {
+          Autologin = {
+            Session = lib.mkForce "retro-gaming.desktop";
+            User    = lib.mkForce config.nixcore.username;
+            Relogin = lib.mkForce true;
+          };
+          General = {
+            DefaultSession = lib.mkForce "retro-gaming.desktop";
+          };
+        };
       };
     };
+
+    # Force SDDM autologin via sddm.conf.d dropin so SteamOS cannot override it
+    environment.etc."sddm.conf.d/zz-retro-autologin.conf".text = lib.mkForce ''
+      [Autologin]
+      User=${config.nixcore.username}
+      Session=retro-gaming.desktop
+      Relogin=true
+
+      [General]
+      DefaultSession=retro-gaming.desktop
+    '';
   };
 
   system.stateVersion = "26.05";

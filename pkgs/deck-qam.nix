@@ -59,7 +59,7 @@ writeShellScriptBin "deck-qam" ''
     HEADER_STATUS="🎮 Playing: $GAME_NAME"
     QUIT_LABEL="󰈆   Force Quit Active Game    [Running: $GAME_NAME]"
   else
-    HEADER_STATUS="󰊴 Idle in Carousel"
+    HEADER_STATUS="󰊴 Idle in Pegasus"
     QUIT_LABEL="󰈆   Force Quit Game           [No Game Running]"
   fi
 
@@ -107,8 +107,8 @@ writeShellScriptBin "deck-qam" ''
 
   case "$CHOICE" in
     *"Force Quit"*)
-      pkill -9 -f "retroarch|duckstation|pcsx2|dolphin-emu|ppsspp|ryujinx|eden|mupen64plus|flycast|es-de|pegasus" || true
-      notify-send "Quick Access" "Active game force-quit" -t 1500
+      pkill -9 -f "retroarch|duckstation|pcsx2|dolphin-emu|ppsspp|ryujinx|eden|mupen64plus|flycast" || true
+      notify-send "Quick Access" "Active emulator force-quit" -t 1500
       ;;
 
     *"Performance Overlay"*)
