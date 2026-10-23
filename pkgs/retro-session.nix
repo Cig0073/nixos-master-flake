@@ -3,7 +3,8 @@
 writeShellScriptBin "retro-session" ''
   export MANGOHUD=1
   export MANGOHUD_CONFIG="output_folder=/tmp,toggle_hud=Shift_R+F12,position=top-left,battery,fps,frametime=0"
-  export QT_QPA_PLATFORM=wayland
+  # Pegasus frontend uses Qt5 without QtWayland plugins; use Gamescope's Xwayland server (xcb)
+  export QT_QPA_PLATFORM=xcb
 
   # Prefer privileged capabilities wrapper if running on system
   GAMESCOPE_BIN="/run/wrappers/bin/gamescope"
