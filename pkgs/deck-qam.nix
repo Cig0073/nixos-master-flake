@@ -35,6 +35,23 @@ writeShellScriptBin "deck-qam" ''
   CURR_BRIGHT=$(brightnessctl -m 2>/dev/null | cut -d, -f4)
   [ -z "$CURR_BRIGHT" ] && CURR_BRIGHT="N/A"
 
+  # TDP Limit
+  if [ -f /tmp/deck_tdp_limit ]; then
+    CURR_TDP=$(cat /tmp/deck_tdp_limit 2>/dev/null)
+  else
+    HWMON_CAP=$(cat /sys/class/hwmon/hwmon*/power1_cap 2>/dev/null | head -n1)
+    if [ -n "$HWMON_CAP" ] && [ "$HWMON_CAP" -gt 0 ] 2>/dev/null; then
+      WATT=$(( HWMON_CAP / 1000000 ))
+      if [ "$WATT" -le 30 ] && [ "$WATT" -ge 4 ]; then
+        CURR_TDP="''${WATT}W"
+      else
+        CURR_TDP="15W"
+      fi
+    else
+      CURR_TDP="15W"
+    fi
+  fi
+
   # Active game / emulator
   GAME_PID=$(pgrep -f "retroarch|duckstation|pcsx2|dolphin-emu|ppsspp|ryujinx|eden|mupen64plus|flycast" 2>/dev/null | head -n1)
   if [ -n "$GAME_PID" ]; then
@@ -46,7 +63,7 @@ writeShellScriptBin "deck-qam" ''
     QUIT_LABEL="󰈆   Force Quit Game           [No Game Running]"
   fi
 
-  HEADER_MSG="  $HEADER_STATUS   •   $BAT_INFO   •   $VOL_ICON $CURR_VOL   •   ☀ $CURR_BRIGHT   •   $TIME_INFO"
+  HEADER_MSG="  $HEADER_STATUS   •   $BAT_INFO   •   ⚡ $CURR_TDP   •   $VOL_ICON $CURR_VOL   •   ☀ $CURR_BRIGHT   •   $TIME_INFO"
 
   # ── Fuzzel SteamOS Theme ──────────────────────────────────────────────────
   FUZZEL_THEME=(
@@ -79,7 +96,7 @@ writeShellScriptBin "deck-qam" ''
   MENU_ITEMS=(
     "$QUIT_LABEL"
     "󰍹   Performance Overlay       [Cycle MangoHud]"
-    "󰓅   Thermal & TDP Limit       [5W / 8W / 12W / 15W]"
+    "󰓅   Thermal & TDP Limit       [Currently: $CURR_TDP]"
     "󰃟   Display Brightness        [Currently: $CURR_BRIGHT]"
     "󰕾   Audio Volume              [Currently: $CURR_VOL]"
     "󰌢   Switch to Desktop         [Plasma Mobile]"
@@ -109,12 +126,28 @@ writeShellScriptBin "deck-qam" ''
         "󰓅  12W  - Balanced 3D     [PS2, GameCube, PSP]"
         "󰓅  15W  - Maximum Power   [Wii, Switch, High-end]"
       )
-      TDP=$(printf "%s\n" "''${TDP_OPTIONS[@]}" | fuzzel "''${FUZZEL_THEME[@]}" -p "⚡  TDP LIMIT  " --lines=4)
+      TDP=$(printf "%s\n" "''${TDP_OPTIONS[@]}" | fuzzel "''${FUZZEL_THEME[@]}" -p "⚡  TDP LIMIT (Now: $CURR_TDP)  " --lines=4)
       case "$TDP" in
-        *"5W"*)  ryzenadj --stapm-limit=5000 --fast-limit=5000 --slow-limit=5000 2>/dev/null && notify-send "TDP" "Set to 5 Watts" -t 1500 ;;
-        *"8W"*)  ryzenadj --stapm-limit=8000 --fast-limit=8000 --slow-limit=8000 2>/dev/null && notify-send "TDP" "Set to 8 Watts" -t 1500 ;;
-        *"12W"*) ryzenadj --stapm-limit=12000 --fast-limit=12000 --slow-limit=12000 2>/dev/null && notify-send "TDP" "Set to 12 Watts" -t 1500 ;;
-        *"15W"*) ryzenadj --stapm-limit=15000 --fast-limit=15000 --slow-limit=15000 2>/dev/null && notify-send "TDP" "Set to 15 Watts (Uncapped)" -t 1500 ;;
+        *"5W"*)
+          echo "5W" > /tmp/deck_tdp_limit
+          ryzenadj --stapm-limit=5000 --fast-limit=5000 --slow-limit=5000 2>/dev/null
+          notify-send "TDP" "Set to 5 Watts" -t 1500
+          ;;
+        *"8W"*)
+          echo "8W" > /tmp/deck_tdp_limit
+          ryzenadj --stapm-limit=8000 --fast-limit=8000 --slow-limit=8000 2>/dev/null
+          notify-send "TDP" "Set to 8 Watts" -t 1500
+          ;;
+        *"12W"*)
+          echo "12W" > /tmp/deck_tdp_limit
+          ryzenadj --stapm-limit=12000 --fast-limit=12000 --slow-limit=12000 2>/dev/null
+          notify-send "TDP" "Set to 12 Watts" -t 1500
+          ;;
+        *"15W"*)
+          echo "15W" > /tmp/deck_tdp_limit
+          ryzenadj --stapm-limit=15000 --fast-limit=15000 --slow-limit=15000 2>/dev/null
+          notify-send "TDP" "Set to 15 Watts (Uncapped)" -t 1500
+          ;;
       esac
       ;;
 
