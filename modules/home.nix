@@ -1,5 +1,9 @@
 { pkgs, ... }:
 {
+  home.keyboard = {
+    layout = "us,tr";
+  };
+  
   home.packages = with pkgs; [
     jellyfin-tui
     yazi
@@ -11,6 +15,7 @@
     kdePackages.okular
     mpv
     ueberzugpp
+    xkeyboard-config
   ];
 
   # ── Cursor ────────────────────────────────────────────────────────────────
@@ -26,6 +31,7 @@
   home.sessionVariables = {
     XCURSOR_THEME = "Bibata-Modern-Ice";
     XCURSOR_SIZE  = "24";
+    XKB_CONFIG_ROOT = "${pkgs.xkeyboard-config}/etc/X11/xkb";
   };
 
   # ── Browser: qutebrowser ─────────────────────────────────────────────────

@@ -5,12 +5,6 @@
 // https://github.com/YaLTeR/niri/wiki/Configuration:-Input
 
 input {
-    keyboard {
-        xkb {
-            layout "en,tr" // Use the German keyboard layout
-        }
-        numlock // Enable numlock on startup
-    }
 
     touchpad {
         // accel-speed 0.7
@@ -27,6 +21,7 @@ input {
 // https://github.com/YaLTeR/niri/wiki/Configuration:-Key-Bindings
 
 binds {
+    MOD+TAB                                { switch-layout "next"; }
     MOD+SHIFT+ESCAPE                     { show-hotkey-overlay; }
 
     // ─── Applications ───
@@ -140,7 +135,7 @@ binds {
     MOD+CTRL+8                          { move-column-to-workspace 8; }
     MOD+CTRL+9                          { move-column-to-workspace 9; }
 
-    MOD+TAB                             { focus-workspace-previous; }
+   // MOD+TAB                             { focus-workspace-previous; }
 
     // ─── Layout Controls ───
     MOD+CTRL+F                          { expand-column-to-available-width; }
@@ -264,10 +259,12 @@ binds {
         skip-at-startup
     }
 
-
-// DMS Include Configs
-include "dms/layout.kdl"
-include "dms/cursor.kdl"
 include "dms/colors.kdl"
-include "dms/outputs.kdl"
 include "dms/binds.kdl"
+include "dms/layout.kdl"
+include "dms/outputs.kdl"
+include "dms/windowrules.kdl"
+include "dms/alttab.kdl"
+include "dms/cursor.kdl"
+include "dms/wpblur.kdl"
+include "dms/input.kdl"

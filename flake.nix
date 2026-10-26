@@ -71,6 +71,7 @@
           useGlobalPkgs    = true;
           useUserPackages  = true;
           users.${config.nixcore.username} = ./modules/home.nix;
+          backupFileExtension = "bak";
         };
       };
 
